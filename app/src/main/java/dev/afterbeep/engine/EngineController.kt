@@ -89,13 +89,20 @@ class EngineController(private val app: AfterbeepApp) {
     init {
         scope.launch {
             var wasRunning = readStatus().running
+            var downFor = 0
             while (isActive) {
                 val s = readStatus()
                 _status.value = s
                 _usbDebug.value = usbDebugOn
                 usbPortOpen()
-                if (wasRunning && !s.running) checkUnexpectedStop()
-                wasRunning = s.running
+                if (s.running) {
+                    downFor = 0
+                    // Running again (however it got started): any "stopped/paused" alert is stale.
+                    app.getSystemService(NotificationManager::class.java).cancel(NOTIF_PAUSED)
+                } else downFor++
+                // Only alert after ~6 s of consistently "not running", never on a single blip.
+                if (wasRunning && downFor == 3) checkUnexpectedStop()
+                if (s.running) wasRunning = true else if (downFor >= 3) wasRunning = false
                 delay(2000)
             }
         }
@@ -103,7 +110,9 @@ class EngineController(private val app: AfterbeepApp) {
 
     /** Engine went away without the user tapping Stop: say so, and why if we can tell. */
     fun checkUnexpectedStop() {
-        if (!repo.settings.state.value.engineWanted || readStatus().running || _busy.value != null) return
+        val st = readStatus()
+        if (!repo.settings.state.value.engineWanted || st.running || _busy.value != null) return
+        if (st.heartbeatAgeMs < 15_000) return // heartbeat still recent: a hiccup, not a stop
         if (!usbDebugOn) notifyPaused(
             "Voicemail stopped",
             "USB debugging is off, so leaving Wi-Fi stopped Afterbeep. Turn USB debugging on, then tap to restart.",
@@ -134,12 +143,34 @@ class EngineController(private val app: AfterbeepApp) {
         }
     }
 
-    private fun readStatus(): EngineStatus = runCatching {
-        val o = JSONObject(File(repo.dataDir, "status.json").readText())
-        val age = System.currentTimeMillis() - o.optLong("heartbeat")
-        val running = o.optBoolean("running") && age < 10_000
-        EngineStatus(running, if (running) o.optString("state", "idle") else "off", o.optInt("pid"), o.optInt("version"), age)
-    }.getOrDefault(EngineStatus())
+    @Volatile private var lastGoodStatus = EngineStatus()
+    @Volatile private var lastGoodHeartbeatAt = 0L // absolute time of the engine's last heartbeat we saw
+
+    /**
+     * The engine rewrites status.json every 3 s (write temp + rename). A read can land mid-swap and fail — that
+     * must NOT count as "engine stopped", so retry briefly and otherwise fall back to the last good read, aged by
+     * the heartbeat so a genuinely dead engine still shows as stopped within ~10 s.
+     */
+    private fun readStatus(): EngineStatus {
+        repeat(3) { attempt ->
+            val r = runCatching {
+                val o = JSONObject(File(repo.dataDir, "status.json").readText())
+                val age = System.currentTimeMillis() - o.optLong("heartbeat")
+                val running = o.optBoolean("running") && age < 10_000
+                EngineStatus(running, if (running) o.optString("state", "idle") else "off", o.optInt("pid"), o.optInt("version"), age)
+            }
+            r.getOrNull()?.let {
+                lastGoodStatus = it
+                lastGoodHeartbeatAt = System.currentTimeMillis() - it.heartbeatAgeMs
+                return it
+            }
+            if (attempt < 2) Thread.sleep(60)
+        }
+        val last = lastGoodStatus
+        val age = System.currentTimeMillis() - lastGoodHeartbeatAt
+        return if (last.running && age < 10_000) last.copy(heartbeatAgeMs = age)
+        else last.copy(running = false, state = "off", heartbeatAgeMs = age)
+    }
 
     // ------------------------------------------------------------------ pairing
 
