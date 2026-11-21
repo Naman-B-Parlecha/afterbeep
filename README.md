@@ -39,6 +39,23 @@ Android. Everything happens on the phone:
 - 🔔 **Never surprises you:** an always-on status notification and a Quick Settings tile show whether voicemail is **On** or **Off** right now.
 - 🔒 **Locked down:** only devices you've explicitly trusted can use the debugging connection Afterbeep relies on.
 
+## Screenshots
+
+<table>
+  <tr>
+    <td align="center"><img src="docs/screenshots/01-inbox.png" width="250" alt="Inbox"/><br/><sub><b>Inbox</b> — unread until you've listened</sub></td>
+    <td align="center"><img src="docs/screenshots/02-message.png" width="250" alt="Message"/><br/><sub><b>Message</b> — waveform, speed, call back</sub></td>
+    <td align="center"><img src="docs/screenshots/03-greeting.png" width="250" alt="Greeting"/><br/><sub><b>Greeting</b> — record or generate</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/04-settings.png" width="250" alt="Settings"/><br/><sub><b>Engine & answering</b></sub></td>
+    <td align="center"><img src="docs/screenshots/05-settings-2.png" width="250" alt="Privacy and alerts"/><br/><sub><b>Privacy & alerts</b></sub></td>
+    <td align="center"><img src="docs/screenshots/06-settings-3.png" width="250" alt="Security"/><br/><sub><b>Security & reboots</b></sub></td>
+  </tr>
+</table>
+
+<sub>Taken on a OnePlus 13s. Callers shown are made-up demo data.</sub>
+
 ## How it works (in one minute)
 
 Ordinary apps can't inject audio into a phone call — we tried everything, the full investigation is in
