@@ -5,7 +5,7 @@
 <h1 align="center">Afterbeep</h1>
 
 <p align="center">
-  <b>Voicemail that lives on your phone.</b><br/>
+  <b>Voicemail that lives on your phone — the iPhone feature Android never got.</b><br/>
   When you don't pick up, your Android phone answers, plays <i>your</i> greeting into the call,
   records the caller and keeps the message in a beautiful inbox — no carrier voicemail, no cloud, no root.
 </p>
@@ -21,11 +21,16 @@
 
 ## Why
 
-Carrier voicemail is clunky, sometimes missing entirely (most Indian carriers), and cloud answering services
-send your callers' voices to someone else's servers. Android doesn't let a normal app answer a call *and* talk
-into it — so there has never been a true on-device answering machine.
+**iPhones have voicemail built in. Android phones don't.**
 
-Afterbeep is one. Everything happens on the phone:
+On an iPhone, a call you miss is answered on the device and the caller can leave a message right there
+(Live Voicemail). On Android you're left with whatever your carrier offers — and many carriers, including most in
+India, offer nothing at all. The alternatives aren't great either: cloud answering services send your callers'
+voices to someone else's servers, and Google's call screening is limited to Pixel phones in a few countries.
+
+There's a reason no Android app has filled the gap: Android doesn't let an ordinary app answer a call *and* talk
+into it. Afterbeep finds a way around that — without root — and brings iPhone-style, on-device voicemail to
+Android. Everything happens on the phone:
 
 - 📞 **Answers calls you miss** after a delay you choose.
 - 🗣️ **Plays your greeting into the call** — recorded in your voice or generated with text-to-speech — then a beep.
