@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Route 5 spike: an ORDINARY app (no privileged permissions), like Play Store call recorders. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="dev.vm.route5">
+
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- role-grantable (signature|privileged|role) on this device -->
+    <uses-permission android:name="android.permission.CALL_AUDIO_INTERCEPTION" />
+    <uses-permission android:name="android.permission.CAPTURE_AUDIO_OUTPUT" />
+    <uses-permission android:name="android.permission.MODIFY_PHONE_STATE" />
+
+    <application android:label="VM Route5" android:allowBackup="false">
+        <activity android:name=".MainActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <!-- Required to be eligible for the default-dialer role -->
+            <intent-filter>
+                <action android:name="android.intent.action.DIAL" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="tel" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.DIAL" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <service android:name=".InCallSvc" android:exported="true"
+            android:permission="android.permission.BIND_INCALL_SERVICE">
+            <meta-data android:name="android.telecom.IN_CALL_SERVICE_UI" android:value="true" />
+            <intent-filter>
+                <action android:name="android.telecom.InCallService" />
+            </intent-filter>
+        </service>
+
+        <service android:name=".StreamSvc" android:exported="true"
+            android:permission="android.permission.BIND_CALL_STREAMING_SERVICE">
+            <intent-filter>
+                <action android:name="android.telecom.CallStreamingService" />
+            </intent-filter>
+        </service>
+
+        <service android:name=".VmService" android:exported="false"
+            android:foregroundServiceType="microphone" />
+
+        <!-- Same trick Cube ACR uses: an enabled accessibility service lets the app capture audio during a call. -->
+        <service android:name=".A11yService" android:exported="true"
+            android:label="VM Route5 call capture"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data android:name="android.accessibilityservice" android:resource="@xml/a11y" />
+        </service>
+    </application>
+</manifest>

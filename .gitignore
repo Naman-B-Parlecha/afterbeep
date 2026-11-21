@@ -1,0 +1,19 @@
+.gradle/
+build/
+local.properties
+.idea/
+*.iml
+.kotlin/
+
+keystore/
+keystore.properties
+
+# never commit
+*.apk
+*.aab
+*.jks
+*.keystore
+*.wav
+*.pcm
+*.m4a
+.DS_Store

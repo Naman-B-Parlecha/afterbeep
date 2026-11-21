@@ -1,0 +1,32 @@
+name: Device report
+description: Tell us whether Afterbeep works on your phone
+labels: [device-report]
+body:
+  - type: input
+    id: model
+    attributes: { label: Phone model, placeholder: "OnePlus Nord CE 2 Lite (CPH2381)" }
+    validations: { required: true }
+  - type: input
+    id: os
+    attributes: { label: Android / OEM version, placeholder: "Android 14, OxygenOS 14.0" }
+    validations: { required: true }
+  - type: input
+    id: version
+    attributes: { label: Afterbeep version, placeholder: "1.0.0" }
+    validations: { required: true }
+  - type: checkboxes
+    id: results
+    attributes:
+      label: Test call results
+      options:
+        - label: Pairing worked
+        - label: Engine started (green / Listening)
+        - label: Caller heard the greeting and beep
+        - label: My phone stayed silent during the message
+        - label: The message was saved and plays back fine
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Paste `engine.log` and `startup.log` from Android/data/dev.afterbeep/files/ (numbers are masked)
+      render: text
